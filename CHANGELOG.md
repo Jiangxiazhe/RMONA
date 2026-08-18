@@ -23,6 +23,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `RMONA.md`, `RMONA/optims.py`) to point to the actual repository layout.
 
 ### Fixed
+- Orthogonal-complement construction (`orth_complement`, `cayley_retraction`):
+  replaced the project-then-QR scheme with a single QR of the concatenated
+  matrix `[W0 | Z]`. When a random column of Z lies nearly inside span(W0),
+  the projected residual is near-singular and column-pivot-free
+  `torch.linalg.qr` breaks down on it, reintroducing cross terms up to
+  ~1e-2 in float32 — observed as transient `‖WᵀW − I‖_F` spikes (~2e-4)
+  in the `cayley` method that intermittently failed the large-gradient
+  constraint test on CI (CPU float32). The concatenated QR is backward
+  stable and draw-independent (50-seed × 200-step sweep: worst error
+  1.4e-6 vs 6/20 seeds spiking before the fix).
 - `cayley_retraction`: the Cayley skew generator `A = W0^T xi` is now exactly
   skew-symmetrized (`A <- (A - A^T)/2`) in both the square and non-square
   branches. Previously the generator was only approximately skew-symmetric

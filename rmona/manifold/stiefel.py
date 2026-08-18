@@ -156,16 +156,36 @@ def msign_skew(A: torch.Tensor) -> torch.Tensor:
 # ---------------------------------------------------------------------------
 
 
+def _orth_complement_qr(W0: torch.Tensor) -> torch.Tensor:
+    """Orthogonal complement of ``span(W0)`` via QR of the concatenated matrix
+    ``[W0 | Z]`` with a random Z (shared numerical core).
+
+    Why not project-then-QR (``qr(Z - W0 W0^T Z)``)? When a random column of Z
+    lies nearly inside span(W0), the projected residual is near-singular and a
+    column-pivot-free ``torch.linalg.qr`` breaks down numerically on it,
+    reintroducing cross terms ||W0^T W_perp|| up to ~1e-2 in float32 (observed
+    as transient constraint spikes in the cayley method). QR of the
+    well-conditioned concatenation is backward stable: Householder never mixes
+    the already-orthogonal leading columns, so ``Q[:, p:]`` spans the
+    complement with O(eps) accuracy, independent of the random draw.
+    """
+    n, p = W0.shape
+    Z = torch.randn(n, n - p, dtype=W0.dtype, device=W0.device)
+    Q, R = torch.linalg.qr(torch.cat([W0, Z], dim=1))
+    # Sign correction so Q[:, :p] keeps the column orientation of W0
+    d = torch.diag(R)
+    s = torch.where(d < 0, -torch.ones_like(d), torch.ones_like(d))
+    Q = Q * s.unsqueeze(0)
+    return Q[:, p:]
+
+
 def orth_complement(W: torch.Tensor):
     """Orthogonal complement ``W_perp in St(n, n-p)`` of a Stiefel point
     ``W in St(n,p)`` (when n > p)."""
     n, p = W.shape
     if n == p:
         return None
-    Z = torch.randn(n, n - p, dtype=W.dtype, device=W.device)
-    Z = Z - W @ (W.T @ Z)
-    Wp, _ = torch.linalg.qr(Z)
-    return Wp
+    return _orth_complement_qr(W)
 
 
 def solve_smp_closed(M: torch.Tensor, W: torch.Tensor, backend: str = "svd") -> torch.Tensor:
@@ -310,10 +330,10 @@ def cayley_retraction(W: torch.Tensor, xi: torch.Tensor) -> torch.Tensor:
             return qr_retraction(W, xi)
         return W0 @ inner
     else:
-        # Complete the orthogonal basis: random W_perp in St(n, n-p) orthogonal to W
-        Z = torch.randn(n, n - p, dtype=W.dtype, device=W.device)
-        Z = Z - W0 @ (W0.T @ Z)  # orthogonalize wrt the column space of W
-        W_perp, _ = torch.linalg.qr(Z)
+        # Complete the orthogonal basis via QR of the concatenated matrix
+        # (backward-stable; see _orth_complement_qr for why project-then-QR
+        # is numerically unsafe here)
+        W_perp = _orth_complement_qr(W0)
         Wbar = torch.cat([W0, W_perp], dim=1)  # (n, n) orthogonal
         A1 = W0.T @ xi  # (p, p), skew-symmetric up to the drift of W
         A1 = 0.5 * (A1 - A1.T)  # exact skew-symmetrization (numerical safety)

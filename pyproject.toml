@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rmona"
+version = "0.1.0"
+description = "Riemannian-MONA (RMONA): manifold curvature-aware optimizer for orthogonal-constrained deep learning"
+readme = "README.md"
+requires-python = ">=3.9"
+# Compatible form: builds with older setuptools too (the PEP 639 SPDX string
+# requires setuptools>=77).
+license = { file = "LICENSE" }
+authors = [{ name = "RMONA contributors" }]
+keywords = [
+    "optimizer", "manifold", "stiefel", "orthogonal", "curvature",
+    "muon", "mona", "deep-learning", "pytorch",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.0",
+]
+
+[project.optional-dependencies]
+# Extra dependencies for reproducing the experiments
+experiments = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+
+[project.urls]
+Homepage = "https://github.com/Jiangxiazhe/RMONA"
+Repository = "https://github.com/Jiangxiazhe/RMONA"
+Documentation = "https://github.com/Jiangxiazhe/RMONA/blob/main/docs/api.md"
+"Bug Tracker" = "https://github.com/Jiangxiazhe/RMONA/issues"
+
+[tool.setuptools.packages.find]
+include = ["rmona*"]
+
+[tool.setuptools.package-data]
+rmona = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+# E741: single-letter math symbols (O = orthogonal direction, I = identity)
+ignore = ["E501", "E741"]
+
+[tool.ruff.lint.per-file-ignores]
+# Experiment scripts use compact research-code style
+"examples/*" = ["E731", "E702", "I001"]

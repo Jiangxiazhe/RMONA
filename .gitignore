@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.pytest_cache/
+.venv/
+venv/
+
+# 实验产物（结果/图表由脚本重新生成，不入库）
+results/
+plots/
+figures/
+data/
+*.log
+
+# 但 README 展示用的图表需入库（docs/figures/）
+!docs/figures/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store

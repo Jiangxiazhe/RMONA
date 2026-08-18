@@ -1,0 +1,7 @@
+# 核心依赖（安装包时自动安装 torch）
+torch>=2.0
+
+# 实验复现（pip install -e ".[experiments]"）
+numpy
+pandas
+matplotlib

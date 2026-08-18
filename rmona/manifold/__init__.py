@@ -1,0 +1,38 @@
+"""Manifold subpackage: core geometric primitives on the Stiefel manifold."""
+from .stiefel import (
+    cayley_retraction,
+    msign,
+    msign_newtonschulz,
+    msign_skew,
+    msign_svd,
+    orth_complement,
+    orthogonality_error,
+    parallel_transport_approx,
+    proj_tangent,
+    qr_retraction,
+    random_stiefel,
+    retract,
+    solve_smp,
+    solve_smp_ap,
+    solve_smp_closed,
+    solve_smp_dual,
+)
+
+__all__ = [
+    "proj_tangent",
+    "parallel_transport_approx",
+    "orthogonality_error",
+    "random_stiefel",
+    "msign",
+    "msign_svd",
+    "msign_newtonschulz",
+    "msign_skew",
+    "orth_complement",
+    "solve_smp",
+    "solve_smp_closed",
+    "solve_smp_dual",
+    "solve_smp_ap",
+    "retract",
+    "qr_retraction",
+    "cayley_retraction",
+]

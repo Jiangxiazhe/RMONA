@@ -1,0 +1,29 @@
+# This CITATION.cff file was generated for the RMONA repository.
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Riemannian-MONA: Curvature-Aware Manifold Optimization for Orthogonal Constraints"
+abstract: >-
+  RMONA is a PyTorch optimizer for orthogonal-constrained optimization. On the
+  Stiefel manifold it combines an exact spectral-metric-problem (SMP) descent
+  direction with an EMA gradient-difference curvature channel transported
+  across tangent spaces via reprojection.
+authors:
+  - name: "RMONA contributors"
+date-released: "2026-08-17"
+version: "0.1.0"
+license: "MIT"
+keywords:
+  - optimizer
+  - manifold
+  - stiefel
+  - orthogonal
+  - curvature
+  - pytorch
+url: "https://github.com/Jiangxiazhe/RMONA"
+preferred-citation:
+  type: software
+  title: "Riemannian-MONA: Curvature-Aware Manifold Optimization for Orthogonal Constraints"
+  authors:
+    - name: "RMONA contributors"
+  year: 2026
+  version: "0.1.0"
